@@ -116,6 +116,42 @@ function Autobind(
   return adjDescriptor;
 }
 
+/* ------------------------------- Base Class ------------------------------- */
+abstract class BaseClass<
+  HostElement extends HTMLElement,
+  Element extends HTMLElement
+> {
+  inputTemplate: HTMLTemplateElement;
+  hostElement: HostElement;
+  element: Element;
+  insertAtStart: boolean;
+  newElementId?: string;
+
+  constructor() {
+    this.inputTemplate = document.getElementById(
+      "project-list"
+    )! as HTMLTemplateElement;
+    this.hostElement = <HostElement>document.getElementById("app")!;
+    const importedNode = document.importNode(this.inputTemplate.content, true);
+    this.element = <Element>importedNode.firstElementChild;
+    if (this.newElementId) {
+      this.element.id = this.newElementId;
+    }
+
+    this.attach();
+  }
+
+  private attach() {
+    this.hostElement.insertAdjacentElement(
+      this.insertAtStart ? "afterbegin" : "beforeend",
+      this.element
+    );
+  }
+
+  abstract configure(): void;
+  abstract renderContent(): void;
+}
+
 /* ------------------------------ Project List ------------------------------ */
 class ProjectList {
   inputTemplate: HTMLTemplateElement;

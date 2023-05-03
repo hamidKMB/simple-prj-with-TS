@@ -85,6 +85,22 @@ function Autobind(_target, _methodName, descriptor) {
     };
     return adjDescriptor;
 }
+/* ------------------------------- Base Class ------------------------------- */
+class BaseClass {
+    constructor() {
+        this.inputTemplate = document.getElementById("project-list");
+        this.hostElement = document.getElementById("app");
+        const importedNode = document.importNode(this.inputTemplate.content, true);
+        this.element = importedNode.firstElementChild;
+        if (this.newElementId) {
+            this.element.id = this.newElementId;
+        }
+        this.attach();
+    }
+    attach() {
+        this.hostElement.insertAdjacentElement(this.insertAtStart ? "afterbegin" : "beforeend", this.element);
+    }
+}
 /* ------------------------------ Project List ------------------------------ */
 class ProjectList {
     constructor(type) {
