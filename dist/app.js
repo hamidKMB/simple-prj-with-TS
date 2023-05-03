@@ -5,6 +5,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+/* ------------------------------ Project Types ----------------------------- */
+var Status;
+(function (Status) {
+    Status[Status["Active"] = 0] = "Active";
+    Status[Status["Finished"] = 1] = "Finished";
+})(Status || (Status = {}));
+class Project {
+    constructor(title, description, numOfPeople, status) {
+        this.title = title;
+        this.description = description;
+        this.numOfPeople = numOfPeople;
+        this.status = status;
+    }
+}
+/* ------------------------ Project State Managements ----------------------- */
 class ProjectState {
     constructor() {
         this.listeners = [];
@@ -22,16 +37,12 @@ class ProjectState {
     addListeners(listenerFn) {
         this.listeners.push(listenerFn);
     }
-    addProject(title, desc, numOfPeople) {
-        this.projects.push({
-            title,
-            desc,
-            numOfPeople,
-        });
+    addProject(title, desc, numOfPeople, status) {
+        const newProject = new Project(title, desc, numOfPeople, status);
+        this.projects.push(newProject);
         for (let listenerFn of this.listeners) {
             listenerFn(this.projects.slice());
         }
-        console.log(this.projects);
     }
 }
 const projectState = ProjectState.getInstance();
@@ -74,6 +85,7 @@ function Autobind(_target, _methodName, descriptor) {
     };
     return adjDescriptor;
 }
+/* ------------------------------ Project List ------------------------------ */
 class ProjectList {
     constructor(type) {
         this.type = type;
@@ -84,7 +96,13 @@ class ProjectList {
         this.element.id = `${this.type}-projects`;
         this.assignedProjects = [];
         projectState.addListeners((projects) => {
-            this.assignedProjects = projects;
+            const revelantProjects = projects.filter((prj) => {
+                if (this.type === "active") {
+                    return prj.status === Status.Active;
+                }
+                return prj.status === Status.Finished;
+            });
+            this.assignedProjects = revelantProjects;
             this.renderProjects();
         });
         this.attach();
@@ -92,7 +110,8 @@ class ProjectList {
     }
     renderProjects() {
         const listEl = document.getElementById(`${this.type}-projects-list`);
-        for (let prjInfo of this.assignedProjects) {
+        listEl.innerHTML = "";
+        for (const prjInfo of this.assignedProjects) {
             const listItem = document.createElement("li");
             listItem.textContent = prjInfo.title;
             listEl.appendChild(listItem);
@@ -107,6 +126,7 @@ class ProjectList {
         this.hostElement.insertAdjacentElement("beforeend", this.element);
     }
 }
+/* ----------------------------- Project Inputs ----------------------------- */
 class ProjectInput {
     constructor() {
         this.inputTemplate = (document.getElementById("project-input"));
@@ -161,7 +181,7 @@ class ProjectInput {
         const userInputs = this.validateInputs();
         if (Array.isArray(userInputs)) {
             const [title, desc, people] = userInputs;
-            projectState.addProject(title, desc, people);
+            projectState.addProject(title, desc, people, Status.Active);
             this.clearInputs();
         }
     }
