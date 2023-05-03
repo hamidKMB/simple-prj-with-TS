@@ -160,6 +160,28 @@ abstract class BaseClass<
   abstract renderContent(): void;
 }
 
+/* ------------------------------ Project Item ------------------------------ */
+class ProjectItem extends BaseClass<HTMLUListElement, HTMLLIElement> {
+  private project: Project;
+
+  constructor(hostElementId: string, project: Project) {
+    super("single-project", hostElementId, true, project.title);
+    this.project = project;
+
+    this.configure();
+    this.renderContent();
+  }
+
+  configure(): void {}
+
+  renderContent(): void {
+    this.element.querySelector("h2")!.textContent = this.project.title;
+    this.element.querySelector("h3")!.textContent =
+      this.project.numOfPeople.toString();
+    this.element.querySelector("p")!.textContent = this.project.description;
+  }
+}
+
 /* ------------------------------ Project List ------------------------------ */
 class ProjectList extends BaseClass<HTMLDivElement, HTMLElement> {
   assignedProjects: Project[];
@@ -199,9 +221,11 @@ class ProjectList extends BaseClass<HTMLDivElement, HTMLElement> {
     )! as HTMLUListElement;
     listEl.innerHTML = "";
     for (const prjInfo of this.assignedProjects) {
-      const listItem = document.createElement("li");
-      listItem.textContent = prjInfo.title;
-      listEl.appendChild(listItem);
+      new ProjectItem(this.element.querySelector("ul")!.id, prjInfo);
+
+      // const listItem = document.createElement("li");
+      // listItem.textContent = prjInfo.title;
+      // listEl.appendChild(listItem);
     }
   }
 }

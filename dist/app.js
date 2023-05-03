@@ -106,6 +106,22 @@ class BaseClass {
         this.hostElement.insertAdjacentElement(insertAtStart ? "afterbegin" : "beforeend", this.element);
     }
 }
+/* ------------------------------ Project Item ------------------------------ */
+class ProjectItem extends BaseClass {
+    constructor(hostElementId, project) {
+        super("single-project", hostElementId, true, project.title);
+        this.project = project;
+        this.configure();
+        this.renderContent();
+    }
+    configure() { }
+    renderContent() {
+        this.element.querySelector("h2").textContent = this.project.title;
+        this.element.querySelector("h3").textContent =
+            this.project.numOfPeople.toString();
+        this.element.querySelector("p").textContent = this.project.description;
+    }
+}
 /* ------------------------------ Project List ------------------------------ */
 class ProjectList extends BaseClass {
     constructor(type) {
@@ -136,9 +152,10 @@ class ProjectList extends BaseClass {
         const listEl = document.getElementById(`${this.type}-projects-list`);
         listEl.innerHTML = "";
         for (const prjInfo of this.assignedProjects) {
-            const listItem = document.createElement("li");
-            listItem.textContent = prjInfo.title;
-            listEl.appendChild(listItem);
+            new ProjectItem(this.element.querySelector("ul").id, prjInfo);
+            // const listItem = document.createElement("li");
+            // listItem.textContent = prjInfo.title;
+            // listEl.appendChild(listItem);
         }
     }
 }
