@@ -13,15 +13,24 @@ class Project {
   ) {}
 }
 
-type Listener = (items: Project[]) => void;
+type Listener<EntryType> = (items: EntryType[]) => void;
 
 /* ------------------------ Project State Managements ----------------------- */
-class ProjectState {
-  private listeners: Listener[] = [];
+class BaseState<StateType> {
+  protected listeners: Listener<StateType>[] = [];
+
+  addListeners(listenerFn: Listener<StateType>) {
+    this.listeners.push(listenerFn);
+  }
+}
+
+class ProjectState extends BaseState<Project> {
   private projects: Project[] = [];
   private static instance: ProjectState;
 
-  private constructor() {}
+  private constructor() {
+    super();
+  }
 
   static getInstance() {
     if (this.instance) {
@@ -30,10 +39,6 @@ class ProjectState {
       this.instance = new ProjectState();
       return this.instance;
     }
-  }
-
-  addListeners(listenerFn: Listener) {
-    this.listeners.push(listenerFn);
   }
 
   addProject(

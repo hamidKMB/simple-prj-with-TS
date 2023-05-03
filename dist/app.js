@@ -20,9 +20,17 @@ class Project {
     }
 }
 /* ------------------------ Project State Managements ----------------------- */
-class ProjectState {
+class BaseState {
     constructor() {
         this.listeners = [];
+    }
+    addListeners(listenerFn) {
+        this.listeners.push(listenerFn);
+    }
+}
+class ProjectState extends BaseState {
+    constructor() {
+        super();
         this.projects = [];
     }
     static getInstance() {
@@ -33,9 +41,6 @@ class ProjectState {
             this.instance = new ProjectState();
             return this.instance;
         }
-    }
-    addListeners(listenerFn) {
-        this.listeners.push(listenerFn);
     }
     addProject(title, desc, numOfPeople, status) {
         const newProject = new Project(title, desc, numOfPeople, status);
