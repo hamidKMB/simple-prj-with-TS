@@ -1,3 +1,15 @@
+/* -------------------------- Drag&Drop Interfaces -------------------------- */
+interface Draggable {
+  dragStartHandler(event: DragEvent): void;
+  dragEndHandler(event: DragEvent): void;
+}
+
+interface DragTarget {
+  dragOverHandler(event: DragEvent): void;
+  dropHandler(event: DragEvent): void;
+  dragLeaveHandler(event: DragEvent): void;
+}
+
 /* ------------------------------ Project Types ----------------------------- */
 enum Status {
   Active,
@@ -161,7 +173,10 @@ abstract class BaseClass<
 }
 
 /* ------------------------------ Project Item ------------------------------ */
-class ProjectItem extends BaseClass<HTMLUListElement, HTMLLIElement> {
+class ProjectItem
+  extends BaseClass<HTMLUListElement, HTMLLIElement>
+  implements Draggable
+{
   private project: Project;
 
   get personText(): string {
@@ -181,8 +196,19 @@ class ProjectItem extends BaseClass<HTMLUListElement, HTMLLIElement> {
     this.configure();
     this.renderContent();
   }
+  @Autobind
+  dragStartHandler(event: DragEvent): void {
+    console.log(event);
+  }
 
-  configure(): void {}
+  dragEndHandler(event: DragEvent): void {
+    console.log("dragEnd");
+  }
+
+  configure(): void {
+    this.element.addEventListener("dragstart", this.dragStartHandler);
+    this.element.addEventListener("dragend", this.dragEndHandler);
+  }
 
   renderContent(): void {
     this.element.querySelector("h2")!.textContent = this.project.title;

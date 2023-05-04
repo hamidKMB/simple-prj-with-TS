@@ -121,7 +121,16 @@ class ProjectItem extends BaseClass {
         this.configure();
         this.renderContent();
     }
-    configure() { }
+    dragStartHandler(event) {
+        console.log(event);
+    }
+    dragEndHandler(event) {
+        console.log("dragEnd");
+    }
+    configure() {
+        this.element.addEventListener("dragstart", this.dragStartHandler);
+        this.element.addEventListener("dragend", this.dragEndHandler);
+    }
     renderContent() {
         this.element.querySelector("h2").textContent = this.project.title;
         this.element.querySelector("h3").textContent =
@@ -129,6 +138,9 @@ class ProjectItem extends BaseClass {
         this.element.querySelector("p").textContent = this.project.description;
     }
 }
+__decorate([
+    Autobind
+], ProjectItem.prototype, "dragStartHandler", null);
 /* ------------------------------ Project List ------------------------------ */
 class ProjectList extends BaseClass {
     constructor(type) {
