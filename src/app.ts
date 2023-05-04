@@ -164,6 +164,16 @@ abstract class BaseClass<
 class ProjectItem extends BaseClass<HTMLUListElement, HTMLLIElement> {
   private project: Project;
 
+  get personText(): string {
+    const { numOfPeople } = this.project;
+
+    if (numOfPeople === 1) {
+      return "1 person";
+    }
+
+    return `${numOfPeople} persons`;
+  }
+
   constructor(hostElementId: string, project: Project) {
     super("single-project", hostElementId, true, project.title);
     this.project = project;
@@ -177,7 +187,7 @@ class ProjectItem extends BaseClass<HTMLUListElement, HTMLLIElement> {
   renderContent(): void {
     this.element.querySelector("h2")!.textContent = this.project.title;
     this.element.querySelector("h3")!.textContent =
-      this.project.numOfPeople.toString();
+      this.personText + " assigned";
     this.element.querySelector("p")!.textContent = this.project.description;
   }
 }
@@ -222,10 +232,6 @@ class ProjectList extends BaseClass<HTMLDivElement, HTMLElement> {
     listEl.innerHTML = "";
     for (const prjInfo of this.assignedProjects) {
       new ProjectItem(this.element.querySelector("ul")!.id, prjInfo);
-
-      // const listItem = document.createElement("li");
-      // listItem.textContent = prjInfo.title;
-      // listEl.appendChild(listItem);
     }
   }
 }

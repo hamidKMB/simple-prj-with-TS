@@ -108,6 +108,13 @@ class BaseClass {
 }
 /* ------------------------------ Project Item ------------------------------ */
 class ProjectItem extends BaseClass {
+    get personText() {
+        const { numOfPeople } = this.project;
+        if (numOfPeople === 1) {
+            return "1 person";
+        }
+        return `${numOfPeople} persons`;
+    }
     constructor(hostElementId, project) {
         super("single-project", hostElementId, true, project.title);
         this.project = project;
@@ -118,7 +125,7 @@ class ProjectItem extends BaseClass {
     renderContent() {
         this.element.querySelector("h2").textContent = this.project.title;
         this.element.querySelector("h3").textContent =
-            this.project.numOfPeople.toString();
+            this.personText + " assigned";
         this.element.querySelector("p").textContent = this.project.description;
     }
 }
@@ -153,9 +160,6 @@ class ProjectList extends BaseClass {
         listEl.innerHTML = "";
         for (const prjInfo of this.assignedProjects) {
             new ProjectItem(this.element.querySelector("ul").id, prjInfo);
-            // const listItem = document.createElement("li");
-            // listItem.textContent = prjInfo.title;
-            // listEl.appendChild(listItem);
         }
     }
 }
