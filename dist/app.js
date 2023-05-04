@@ -150,7 +150,21 @@ class ProjectList extends BaseClass {
         this.configure();
         this.renderContent();
     }
+    dragOverHandler(event) {
+        const listEl = this.element.querySelector("ul");
+        listEl.classList.add("droppable");
+    }
+    dragLeaveHandler(event) {
+        const listEl = this.element.querySelector("ul");
+        listEl.classList.remove("droppable");
+    }
+    dropHandler(event) {
+        console.log("dropHandler");
+    }
     configure() {
+        this.element.addEventListener("dragover", this.dragOverHandler);
+        this.element.addEventListener("dragleave", this.dragLeaveHandler);
+        this.element.addEventListener("drop", this.dropHandler);
         projectState.addListeners((projects) => {
             const revelantProjects = projects.filter((prj) => {
                 if (this.type === "active") {
@@ -175,6 +189,12 @@ class ProjectList extends BaseClass {
         }
     }
 }
+__decorate([
+    Autobind
+], ProjectList.prototype, "dragOverHandler", null);
+__decorate([
+    Autobind
+], ProjectList.prototype, "dragLeaveHandler", null);
 /* ----------------------------- Project Inputs ----------------------------- */
 class ProjectInput extends BaseClass {
     constructor() {
