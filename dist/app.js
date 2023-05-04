@@ -45,6 +45,16 @@ class ProjectState extends BaseState {
     addProject(title, desc, numOfPeople, status) {
         const newProject = new Project(title, desc, numOfPeople, status);
         this.projects.push(newProject);
+        this.updateListeners();
+    }
+    changeStatus(titleOfSelectedPrj, newStatus) {
+        const project = this.projects.find((prj) => prj.title === titleOfSelectedPrj);
+        if (project) {
+            project.status = newStatus;
+        }
+        this.updateListeners();
+    }
+    updateListeners() {
         for (let listenerFn of this.listeners) {
             listenerFn(this.projects.slice());
         }
@@ -122,11 +132,10 @@ class ProjectItem extends BaseClass {
         this.renderContent();
     }
     dragStartHandler(event) {
-        console.log(event);
+        event.dataTransfer.setData("text/plain", this.project.title);
+        event.dataTransfer.effectAllowed = "move";
     }
-    dragEndHandler(event) {
-        console.log("dragEnd");
-    }
+    dragEndHandler(event) { }
     configure() {
         this.element.addEventListener("dragstart", this.dragStartHandler);
         this.element.addEventListener("dragend", this.dragEndHandler);
@@ -151,15 +160,18 @@ class ProjectList extends BaseClass {
         this.renderContent();
     }
     dragOverHandler(event) {
-        const listEl = this.element.querySelector("ul");
-        listEl.classList.add("droppable");
+        if (event.dataTransfer && event.dataTransfer.types[0] === "text/plain") {
+            event.preventDefault();
+            const listEl = this.element.querySelector("ul");
+            listEl.classList.add("droppable");
+        }
     }
     dragLeaveHandler(event) {
         const listEl = this.element.querySelector("ul");
         listEl.classList.remove("droppable");
     }
     dropHandler(event) {
-        console.log("dropHandler");
+        projectState.changeStatus(event.dataTransfer.getData("text/plain"), this.type == "active" ? Status.Active : Status.Finished);
     }
     configure() {
         this.element.addEventListener("dragover", this.dragOverHandler);
@@ -195,6 +207,9 @@ __decorate([
 __decorate([
     Autobind
 ], ProjectList.prototype, "dragLeaveHandler", null);
+__decorate([
+    Autobind
+], ProjectList.prototype, "dropHandler", null);
 /* ----------------------------- Project Inputs ----------------------------- */
 class ProjectInput extends BaseClass {
     constructor() {

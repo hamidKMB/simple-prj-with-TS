@@ -61,7 +61,22 @@ class ProjectState extends BaseState<Project> {
   ) {
     const newProject = new Project(title, desc, numOfPeople, status);
     this.projects.push(newProject);
+    this.updateListeners();
+  }
 
+  changeStatus(titleOfSelectedPrj: string, newStatus: Status) {
+    const project = this.projects.find(
+      (prj) => prj.title === titleOfSelectedPrj
+    );
+
+    if (project) {
+      project.status = newStatus;
+    }
+
+    this.updateListeners();
+  }
+
+  private updateListeners() {
     for (let listenerFn of this.listeners) {
       listenerFn(this.projects.slice());
     }
@@ -199,12 +214,11 @@ class ProjectItem
 
   @Autobind
   dragStartHandler(event: DragEvent): void {
-    console.log(event);
+    event.dataTransfer!.setData("text/plain", this.project.title);
+    event.dataTransfer!.effectAllowed = "move";
   }
 
-  dragEndHandler(event: DragEvent): void {
-    console.log("dragEnd");
-  }
+  dragEndHandler(event: DragEvent): void {}
 
   configure(): void {
     this.element.addEventListener("dragstart", this.dragStartHandler);
@@ -236,8 +250,11 @@ class ProjectList
 
   @Autobind
   dragOverHandler(event: DragEvent): void {
-    const listEl = this.element.querySelector("ul")!;
-    listEl.classList.add("droppable");
+    if (event.dataTransfer && event.dataTransfer.types[0] === "text/plain") {
+      event.preventDefault();
+      const listEl = this.element.querySelector("ul")!;
+      listEl.classList.add("droppable");
+    }
   }
 
   @Autobind
@@ -246,8 +263,12 @@ class ProjectList
     listEl.classList.remove("droppable");
   }
 
+  @Autobind
   dropHandler(event: DragEvent): void {
-    console.log("dropHandler");
+    projectState.changeStatus(
+      event.dataTransfer!.getData("text/plain"),
+      this.type == "active" ? Status.Active : Status.Finished
+    );
   }
 
   configure() {
