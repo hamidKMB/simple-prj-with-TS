@@ -1,3 +1,9 @@
+/// <reference path='project-baseclass.ts'/>
+/// <reference path='../models/drag-drop.ts'/>
+/// <reference path='../models/project.ts'/>
+/// <reference path='../state/project-state.ts'/>
+/// <reference path='../decorators/autobind.ts'/>
+
 namespace App {
   /* ------------------------------ Project Item ------------------------------ */
   export class ProjectItem

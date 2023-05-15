@@ -5,6 +5,26 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var App;
+(function (App) {
+    /* ------------------------------- Base Class ------------------------------- */
+    class BaseClass {
+        constructor(inputTemplateId, hostElementId, insertAtStart, newElementId) {
+            this.inputTemplate = document.getElementById(inputTemplateId);
+            this.hostElement = document.getElementById(hostElementId);
+            const importedNode = document.importNode(this.inputTemplate.content, true);
+            this.element = importedNode.firstElementChild;
+            if (newElementId) {
+                this.element.id = newElementId;
+            }
+            this.attach(insertAtStart);
+        }
+        attach(insertAtStart) {
+            this.hostElement.insertAdjacentElement(insertAtStart ? "afterbegin" : "beforeend", this.element);
+        }
+    }
+    App.BaseClass = BaseClass;
+})(App || (App = {}));
 /* -------------------------- Drag&Drop Interfaces -------------------------- */
 var App;
 (function (App) {
@@ -71,38 +91,6 @@ var App;
 })(App || (App = {}));
 var App;
 (function (App) {
-    function validate(validatableInput) {
-        let isValid = true;
-        if (validatableInput.required) {
-            isValid =
-                isValid && validatableInput.value.toString().trim().length !== 0;
-        }
-        if (validatableInput.minLength != null &&
-            typeof validatableInput.value === "string") {
-            isValid =
-                isValid &&
-                    validatableInput.value.trim().length > validatableInput.minLength;
-        }
-        if (validatableInput.maxLength != null &&
-            typeof validatableInput.value === "string") {
-            isValid =
-                isValid &&
-                    validatableInput.value.trim().length < validatableInput.maxLength;
-        }
-        if (validatableInput.min != null &&
-            typeof validatableInput.value === "number") {
-            isValid = isValid && validatableInput.value < validatableInput.min;
-        }
-        if (validatableInput.max != null &&
-            typeof validatableInput.value === "number") {
-            isValid = isValid && validatableInput.value > validatableInput.max;
-        }
-        return isValid;
-    }
-    App.validate = validate;
-})(App || (App = {}));
-var App;
-(function (App) {
     function Autobind(_target, _methodName, descriptor) {
         const originalMethod = descriptor.value;
         const adjDescriptor = {
@@ -117,26 +105,11 @@ var App;
     }
     App.Autobind = Autobind;
 })(App || (App = {}));
-var App;
-(function (App) {
-    /* ------------------------------- Base Class ------------------------------- */
-    class BaseClass {
-        constructor(inputTemplateId, hostElementId, insertAtStart, newElementId) {
-            this.inputTemplate = document.getElementById(inputTemplateId);
-            this.hostElement = document.getElementById(hostElementId);
-            const importedNode = document.importNode(this.inputTemplate.content, true);
-            this.element = importedNode.firstElementChild;
-            if (newElementId) {
-                this.element.id = newElementId;
-            }
-            this.attach(insertAtStart);
-        }
-        attach(insertAtStart) {
-            this.hostElement.insertAdjacentElement(insertAtStart ? "afterbegin" : "beforeend", this.element);
-        }
-    }
-    App.BaseClass = BaseClass;
-})(App || (App = {}));
+/// <reference path='project-baseclass.ts'/>
+/// <reference path='../models/drag-drop.ts'/>
+/// <reference path='../models/project.ts'/>
+/// <reference path='../state/project-state.ts'/>
+/// <reference path='../decorators/autobind.ts'/>
 var App;
 (function (App) {
     /* ------------------------------ Project Item ------------------------------ */
@@ -175,6 +148,11 @@ var App;
     ], ProjectItem.prototype, "dragStartHandler", null);
     App.ProjectItem = ProjectItem;
 })(App || (App = {}));
+/// <reference path='project-baseclass.ts'/>
+/// <reference path='../models/drag-drop.ts'/>
+/// <reference path='../models/project.ts'/>
+/// <reference path='../state/project-state.ts'/>
+/// <reference path='../decorators/autobind.ts'/>
 var App;
 (function (App) {
     /* ------------------------------ Project List ------------------------------ */
@@ -241,7 +219,42 @@ var App;
 })(App || (App = {}));
 var App;
 (function (App) {
-    /* ----------------------------- Project Inputs ----------------------------- */
+    function validate(validatableInput) {
+        let isValid = true;
+        if (validatableInput.required) {
+            isValid =
+                isValid && validatableInput.value.toString().trim().length !== 0;
+        }
+        if (validatableInput.minLength != null &&
+            typeof validatableInput.value === "string") {
+            isValid =
+                isValid &&
+                    validatableInput.value.trim().length > validatableInput.minLength;
+        }
+        if (validatableInput.maxLength != null &&
+            typeof validatableInput.value === "string") {
+            isValid =
+                isValid &&
+                    validatableInput.value.trim().length < validatableInput.maxLength;
+        }
+        if (validatableInput.min != null &&
+            typeof validatableInput.value === "number") {
+            isValid = isValid && validatableInput.value < validatableInput.min;
+        }
+        if (validatableInput.max != null &&
+            typeof validatableInput.value === "number") {
+            isValid = isValid && validatableInput.value > validatableInput.max;
+        }
+        return isValid;
+    }
+    App.validate = validate;
+})(App || (App = {}));
+/// <reference path='project-baseclass.ts'/>
+/// <reference path='../utils/validation.ts'/>
+/// <reference path='../state/project-state.ts'/>
+/// <reference path='../decorators/autobind.ts'/>
+var App;
+(function (App) {
     class ProjectInput extends App.BaseClass {
         constructor() {
             super("project-input", "app", true, "user-input");
@@ -307,18 +320,12 @@ var App;
     ], ProjectInput.prototype, "submitHandler", null);
     App.ProjectInput = ProjectInput;
 })(App || (App = {}));
-/// <reference path='models/drag-drop.ts' />
-/// <reference path="models/project.ts" />
-/// <reference path="state/project-state.ts" />
-/// <reference path="utils/validation.ts" />
-/// <reference path="decorators/autobind.ts" />
-/// <reference path="components/project-baseclass.ts" />
 /// <reference path="components/project-item.ts" />
 /// <reference path="components/project-list.ts" />
 /// <reference path="components/project-inputs.ts" />
 var App;
 (function (App) {
-    const prjInput = new App.ProjectInput();
-    const activeProjects = new App.ProjectList("active");
-    const finishedProjects = new App.ProjectList("finished");
+    new App.ProjectInput();
+    new App.ProjectList("active");
+    new App.ProjectList("finished");
 })(App || (App = {}));
